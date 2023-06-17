@@ -1,5 +1,5 @@
 package general;
 
 public interface Function {
-    Double solve(Double... x);
+    double solve(Double... x);
 }

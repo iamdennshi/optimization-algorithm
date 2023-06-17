@@ -2,7 +2,7 @@ package tangent;
 
 import general.Function;
 
-public class Tangent {
+final public class Tangent {
     public static double find(Function f, Function dfx, double a, double b, double eps) {
         int i = 0; // iteration
         double startX;

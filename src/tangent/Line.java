@@ -1,7 +1,7 @@
 package tangent;
 
 /* f(x) = ax + b*/
-class Line {
+final class Line {
     private double a;
     private double b;
 

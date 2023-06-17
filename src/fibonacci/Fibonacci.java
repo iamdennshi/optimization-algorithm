@@ -1,7 +1,7 @@
 package fibonacci;
 import general.Function;
 
-public class Fibonacci {
+final public class Fibonacci {
     static public double find(Function f, double a, double b, int n) {
         int i = 0;
         double u, v, fu, fv;
