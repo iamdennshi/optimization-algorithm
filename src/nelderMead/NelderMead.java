@@ -1,7 +1,10 @@
 package nelderMead;
 
 import general.Function;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Метод Нелдера-Мида (метод диформируемого многогранника)
@@ -10,12 +13,11 @@ import java.util.ArrayList;
  */
 public final class NelderMead {
     // Промяжуточная информация
-    private static final boolean DEBUG = true;
-
+    private static final boolean DEBUG = false;
 
     // Вычисление функции в точке p
     private static double calc(Function f, ArrayList<Double> p) {
-        return f.solve(p.toArray(new Double[p.size()]));
+        return f.solve(p.toArray(new Double[]{}));
     }
 
     // Сортировка по значению функции f для точек points
@@ -33,7 +35,7 @@ public final class NelderMead {
      * @param pointStart Точка начала поиска из n компонент
      * @param eps        Погрешность результата, например 1e-6
      */
-    public static ArrayList<Double> find(Function f, ArrayList<Double> pointStart, double eps) {
+    public static ArrayList<Double> find(Function f, List<Double> pointStart, double eps) {
         // Параметры
         final double A = 1.0;
         final double B = 0.5;
@@ -56,6 +58,7 @@ public final class NelderMead {
         for (int i = 0; i < n; i++) {
             x.add(new ArrayList<Double>(n - 1));
         }
+
         // Инициализация массива кординатами точек
         for (int i = 0; i < n; i++) {
             int usedRand = i;
@@ -96,7 +99,6 @@ public final class NelderMead {
                 System.out.println("fx: " + fx);
             }
 
-
             // xc - центр тяжести
             ArrayList<Double> xc = new ArrayList<>(n - 1);
 
@@ -106,7 +108,7 @@ public final class NelderMead {
                 for (int j = 0; j < x.size() - 1; j++) {
                     tmp += x.get(j).get(i);
                 }
-                xc.add(tmp);
+                xc.add(tmp / (n - 1));
             }
 
             double fxc = calc(f, xc);
@@ -166,18 +168,14 @@ public final class NelderMead {
             } else {
                 // редукция
                 ArrayList<Double> xl = new ArrayList<>(x.get(xlIndex));
-                ArrayList<Double> xi = new ArrayList<>(n - 1);
+                ArrayList<Double> xi = new ArrayList<>(Collections.nCopies(n - 1, 0.0));
                 ArrayList<Double> xm;
 
                 for (int i = 0; i < n; i++) {
                     xm = new ArrayList<>(x.get(i));
 
                     for (int j = 0; j < n - 1; j++) {
-                        if (i == 0) {
-                            xi.add(xl.get(j) + (xm.get(j) - xl.get(j)) / 2.0);
-                        } else {
-                            xi.set(j, xl.get(j) + (xm.get(j) - xl.get(j)) / 2.0);
-                        }
+                        xi.set(j, xl.get(j) + (xm.get(j) - xl.get(j)) / 2.0);
                     }
                     x.set(i, xi);
                 }
