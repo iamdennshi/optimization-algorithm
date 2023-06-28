@@ -6,21 +6,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Метод Нелдера-Мида (метод диформируемого многогранника)
- * Вычисляет минимум функции от n переменных, на каждом шаге находятся значения вершин многогранника и
- * присходит смещение в область меньших значений
- */
 public final class NelderMead {
-    // Промяжуточная информация
     private static final boolean DEBUG = false;
-
-    // Вычисление функции в точке p
+    // Calculate the function at the p point
     private static double calc(Function f, ArrayList<Double> p) {
         return f.solve(p.toArray(new Double[]{}));
     }
-
-    // Сортировка по значению функции f для точек points
+    // Sorting by the function value for points
     private static void sortByFunctionResult(Function f, ArrayList<ArrayList<Double>> points) {
         points.sort((o1, o2) -> {
             if (calc(f, o1) - calc(f, o2) > 0) {
@@ -29,37 +21,34 @@ public final class NelderMead {
             return -1;
         });
     }
-
     /**
-     * @param f          Функция
-     * @param pointStart Точка начала поиска из n компонент
-     * @param eps        Погрешность результата, например 1e-6
+     * @param f          Function of any arguments
+     * @param pointStart Starting point of the search
+     * @param eps        Accuracy of result, i.e. 1e-6
      */
     public static ArrayList<Double> find(Function f, List<Double> pointStart, double eps) {
-        // Параметры
         final double A = 1.0;
         final double B = 0.5;
         final double C = 2.0;
-
-        // Количество итераций
         int iter = 0;
 
-        // Количество точек
+        // Number of points
         final int n = pointStart.size() + 1;
 
-        // Индексы точек xh - наибольная точка, xl - наименьная, xg - близкая к наибольнему значению
+        // Indexes of points
+        // xh - highest point, xl - lowest point, xg - closest to xh
         final int xhIndex = n - 1;
         final int xlIndex = 0;
         final int xgIndex = xhIndex - 1;
 
-        // Массив координат точек
+        // Array of points
         ArrayList<ArrayList<Double>> x = new ArrayList<>(n);
 
         for (int i = 0; i < n; i++) {
             x.add(new ArrayList<Double>(n - 1));
         }
 
-        // Инициализация массива кординатами точек
+        // Initialize array of point coordinates
         for (int i = 0; i < n; i++) {
             int usedRand = i;
             for (int j = 0; j < n - 1; j++) {
@@ -72,21 +61,21 @@ public final class NelderMead {
             }
         }
 
-        // Служат для остановки алгоритма
+        // To stop the algorithm
         double sigma = 0.0;
         double fi = 0.0;
 
-        // Для хранения значений функции
+        // To store function values
         ArrayList<Double> fx;
 
         do {
             fx = new ArrayList<>(n);
 
-            // Сортировка точек по их значениям функции
-            // чтобы узнать где xh - наибольная точка, xl - наименьная, xg - близкая к наибольнему значению
+            // Sorting points by function value
+            // To find: xh, xl, xg
             sortByFunctionResult(f, x);
 
-            // Расчет значений функций
+            // Calculate function values
             for (int i = 0; i < n; i++) {
                 fx.add(calc(f, x.get(i)));
             }
@@ -99,10 +88,10 @@ public final class NelderMead {
                 System.out.println("fx: " + fx);
             }
 
-            // xc - центр тяжести
+            // xc - center of gravity
             ArrayList<Double> xc = new ArrayList<>(n - 1);
 
-            // Исключается точка xh и находится цент тяжести среди других точек
+            // Exclude xh and finding center of gravity among other points
             for (int i = 0; i < n - 1; i++) {
                 double tmp = 0.0;
                 for (int j = 0; j < x.size() - 1; j++) {
@@ -117,7 +106,7 @@ public final class NelderMead {
                 System.out.println("fxc: " + fxc);
             }
 
-            // Отрожение точки xh относительно xc, получаем точку xr
+            // Reflecting xh relative to xc to finding xr
             ArrayList<Double> xr = new ArrayList<>(n - 1);
 
             final double Ap1 = A + 1.0;
@@ -132,7 +121,7 @@ public final class NelderMead {
             }
 
             if (fxr < fx.get(xlIndex)) {
-                // Направление удачное, увеличиваем шаг - растяжения
+                // Stretching
                 ArrayList<Double> xe = new ArrayList<>(n - 1);
                 for (int i = 0; i < n - 1; i++) {
                     xe.add(xc.get(i) * (1 - C) + C * xr.get(i));
@@ -163,10 +152,10 @@ public final class NelderMead {
             double fxk = calc(f, xk);
 
             if (fxk < fx.get(xhIndex)) {
-                // сжатие
+                // Compression
                 x.set(xhIndex, xk);
             } else {
-                // редукция
+                // Reduction
                 ArrayList<Double> xl = new ArrayList<>(x.get(xlIndex));
                 ArrayList<Double> xi = new ArrayList<>(Collections.nCopies(n - 1, 0.0));
                 ArrayList<Double> xm;
@@ -180,7 +169,7 @@ public final class NelderMead {
                     x.set(i, xi);
                 }
             }
-            // Расчет остановки алгоритма
+            // Calculating the end of the algorithm
             fi = 0.0;
             for (int i = 0; i < n; i++) {
                 fi += fx.get(i) / n;

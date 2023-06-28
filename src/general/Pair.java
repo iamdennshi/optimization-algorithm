@@ -14,7 +14,6 @@ public record Pair(double first, double second) implements Cloneable {
     public String toString() {
         return "(" + first + ", " + second + ")";
     }
-
     @Override
     public Pair clone() {
         return new Pair(this.first, this.second);

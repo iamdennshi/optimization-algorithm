@@ -4,29 +4,28 @@ import general.Function;
 
 final public class Tangent {
     public static double find(Function f, Function dfx, double a, double b, double eps) {
-        int i = 0; // iteration
         double startX;
         boolean isEnd = false;
-        Function g = x -> f.solve(x[1]) + dfx.solve(x[1]) * (x[0] - x[1]);
+        final Function g = x -> f.solve(x[1]) + dfx.solve(x[1]) * (x[0] - x[1]);
 
-        // Касательная от точек a и b
+        // Tangent to points a and b
         Line la = new Line(dfx.solve(a), f.solve(a) + dfx.solve(a) * -a);
         Line lb = new Line(dfx.solve(b), f.solve(b) + dfx.solve(b) * -b);
         Line lc;
 
         do {
-            // Находим точку пересечения двух кастельных
+            // Finding the intersection point of two tangents
             startX = la.findPointOfIntersection(lb);
 
-            // Строим новую касательную от точки пересечения
+            // New tangent to startX
             lc = new Line(dfx.solve(startX), f.solve(startX) + dfx.solve(startX) * -startX);
 
-            // Находим наибольшее пересечение старых кастельных к новой
-            // и заменяем старую касательную новой
+            // Finding the greatest intersection of old tangents with new ones
             double xla = la.findPointOfIntersection(lc);
             double xlb = lb.findPointOfIntersection(lc);
 
             isEnd = Math.abs(f.solve(startX) - la.solve(startX)) < eps;
+            // Replace the old tangent with the new one
             if (la.solve(xla) > lb.solve(xlb)) {
                 la = lc;
             } else {
